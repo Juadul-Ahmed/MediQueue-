@@ -1,9 +1,10 @@
+import { EditModal } from "@/components/EditModal";
 import { Button, Table } from "@heroui/react";
 import React from "react";
 import { BiEdit, BiTrash } from "react-icons/bi";
 
 const TutorsList = async () => {
-  const res = await fetch("http://localhost:5000/tutor/all", { cache: "no-store" });
+  const res = await fetch("http://localhost:5000/tutor/all");
   const tutor = await res.json();
 
   return (
@@ -16,7 +17,7 @@ const TutorsList = async () => {
 
      
       <div className="overflow-hidden  p-2 ">
-        <Table removeWrapper shadow="none" aria-label="Tutor control panel table">
+        <Table  shadow="none" aria-label="Tutor control panel table">
           <Table.ScrollContainer>
             <Table.Content className="min-w-[850px]">
               <Table.Header>
@@ -70,15 +71,8 @@ const TutorsList = async () => {
                           <BiTrash size={18} />
                         </Button>
       
-                        <Button 
-                          isIconOnly 
-                          size="sm" 
-                          variant="light" 
-                          className="text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors rounded-lg"
-                          title="Edit"
-                        >
-                          <BiEdit size={18} />
-                        </Button>
+                        
+                        <EditModal t={t} />
                       </div>
                     </Table.Cell>
                   </Table.Row>
