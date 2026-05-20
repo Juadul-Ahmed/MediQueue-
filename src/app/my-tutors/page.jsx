@@ -1,3 +1,4 @@
+import { DeleteModal } from "@/components/DeleteModal";
 import { EditModal } from "@/components/EditModal";
 import { Button, Table } from "@heroui/react";
 import React from "react";
@@ -61,15 +62,8 @@ const TutorsList = async () => {
                     <Table.Cell className="py-4">
                       <div className="flex items-center justify-center gap-2">
             
-                        <Button 
-                          isIconOnly 
-                          size="sm" 
-                          variant="light" 
-                          className="text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors rounded-lg"
-                          title="Delete"
-                        >
-                          <BiTrash size={18} />
-                        </Button>
+                        
+                        <DeleteModal t={t} />
       
                         
                         <EditModal t={t} />
