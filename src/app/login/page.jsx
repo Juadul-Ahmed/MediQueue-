@@ -9,10 +9,12 @@ import {
   Form,
   Input,
   Label,
+  Separator,
   TextField,
 } from "@heroui/react";
 import { redirect } from "next/navigation";
 import toast from "react-hot-toast";
+import { FcGoogle } from "react-icons/fc";
 
 const LoginPage = () => {
   const handleSubmit = async (e) => {
@@ -20,21 +22,23 @@ const LoginPage = () => {
     const formData = new FormData(e.currentTarget);
     const credentials = Object.fromEntries(formData.entries());
 
-    const {data,error} = await authClient.signIn.email({
-        email: credentials.email,
-        password: credentials.password,
-       
-    })
-    if(data){
-      redirect('/')
+    const { data, error } = await authClient.signIn.email({
+      email: credentials.email,
+      password: credentials.password,
+    });
+    if (data) {
+      redirect("/");
     }
-    if(error){
+    if (error) {
       toast.error("Wrong Credentials");
-    } 
-    
-    
+    }
   };
-
+const handleGoogle = async ()=>{
+     await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/"
+      });
+    }
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50/50 px-4 py-12">
       <Card className="w-full max-w-md border border-slate-200/60 bg-white p-6 shadow-xl shadow-slate-100/70">
@@ -48,8 +52,6 @@ const LoginPage = () => {
         </div>
 
         <Form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          
-
           <TextField
             isRequired
             name="email"
@@ -103,10 +105,24 @@ const LoginPage = () => {
               type="submit"
               className="flex-1 bg-blue-600 hover:bg-blue-700 font-bold text-white text-sm py-2 px-4 h-11 rounded-xl transition shadow-md shadow-blue-500/10 active:scale-98"
             >
-              Login
+              Sign in
             </Button>
           </div>
         </Form>
+        <Separator />
+        <div className="whitespace-nowrap text-center">Or Sign in with</div>
+        <Separator />
+         <div>
+                  <Button
+                    onClick={handleGoogle}
+                    variant="outline"
+                    className=" hover:bg-base-500 hover:text-black w-full flex-1 font-bold text-black text-sm py-2 px-4 h-11 rounded-xl transition shadow-md shadow-blue-500/10 active:scale-98"
+                  >
+                    {" "}
+                    <FcGoogle />
+                    Sign in with Google
+                  </Button>
+                </div>
       </Card>
     </div>
   );

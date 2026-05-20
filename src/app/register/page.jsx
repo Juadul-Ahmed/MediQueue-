@@ -1,5 +1,5 @@
 "use client";
-
+import { FcGoogle } from "react-icons/fc";
 import { authClient } from "@/lib/auth-client";
 import {
   Button,
@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   Label,
+  Separator,
   TextField,
 } from "@heroui/react";
 import { redirect } from "next/navigation";
@@ -20,22 +21,26 @@ const RegisterPage = () => {
     const formData = new FormData(e.currentTarget);
     const credentials = Object.fromEntries(formData.entries());
 
-    const {data,error} = await authClient.signUp.email({
-        email: credentials.email,
-        password: credentials.password,
-        name: credentials.name,
-        image: credentials?.image,
-    })
-    if(data){
-      redirect('/')
+    const { data, error } = await authClient.signUp.email({
+      email: credentials.email,
+      password: credentials.password,
+      name: credentials.name,
+      image: credentials?.image,
+    });
+    if (data) {
+      redirect("/");
     }
-    if(error){
-      toast.success("Wrong Credentials");
-    } 
-    
+    if (error) {
+      toast.error("Wrong Credentials");
+    }
     toast.success("Account created successfully!");
   };
-
+const handleGoogle = async ()=>{
+     await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/"
+      });
+    }
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50/50 px-4 py-12">
       <Card className="w-full max-w-md border border-slate-200/60 bg-white p-6 shadow-xl shadow-slate-100/70">
@@ -56,7 +61,7 @@ const RegisterPage = () => {
             <Input placeholder="Your Name" className="w-full" />
             <FieldError className="text-xs font-medium text-rose-500 mt-1" />
           </TextField>
-          <TextField  name="image" type="url" className="w-full">
+          <TextField name="image" type="url" className="w-full">
             <Label className="text-xs font-bold uppercase tracking-wider text-slate-700 block mb-1">
               Image
             </Label>
@@ -121,6 +126,22 @@ const RegisterPage = () => {
             </Button>
           </div>
         </Form>
+
+        <Separator />
+        <div className="whitespace-nowrap text-center">Or Register with</div>
+        <Separator />
+
+        <div>
+          <Button
+            onClick={handleGoogle}
+            variant="outline"
+            className=" hover:bg-base-500 hover:text-black w-full flex-1 font-bold text-black text-sm py-2 px-4 h-11 rounded-xl transition shadow-md shadow-blue-500/10 active:scale-98"
+          >
+            {" "}
+            <FcGoogle />
+            Register with Google
+          </Button>
+        </div>
       </Card>
     </div>
   );

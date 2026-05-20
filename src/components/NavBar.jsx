@@ -61,6 +61,7 @@ const NavBar = () => {
                 
                   <Avatar className="h-9 w-9 border-2 border-blue-100 ring-offset-2 transition-transform hover:scale-105">
                     <Avatar.Image
+                    referrerPolicy="no-referrer"
                       alt={user.name}
                       src={
                         user?.image }
