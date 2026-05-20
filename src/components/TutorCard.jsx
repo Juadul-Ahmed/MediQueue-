@@ -16,6 +16,7 @@ const TutorCard = ({ tutor }) => {
     hourlyFee,
     sessionStartDate,
     institution,
+    _id
   } = tutor;
 
   return (
@@ -66,7 +67,7 @@ const TutorCard = ({ tutor }) => {
 
       <div className="p-6 pt-0">
         <Link
-          href={"#"}
+          href={`/tutors/${_id}`}
           className="w-full inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-xl shadow-sm transition-colors duration-200 text-sm"
         >
           <span>Book Session</span>
