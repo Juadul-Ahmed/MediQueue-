@@ -1,8 +1,15 @@
 "use client";
+import { authClient } from "@/lib/auth-client";
+import { Avatar } from "@heroui/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NavBar = () => {
+  const { data: session } = authClient.useSession();
+
+  const user = session?.user;
+  console.log(user);
+
   const pathname = usePathname();
 
   const linkStyle = (path) =>
@@ -45,20 +52,56 @@ const NavBar = () => {
             </Link>
           </div>
 
-          <div className="flex gap-5 items-center">
-            <Link 
-              href="/login"
-              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-black  hover:bg-blue-700 hover:text-white shadow-sm transition"
-            >
-             Login
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition"
-            >
-              Register
-            </Link>
-          </div>
+          <>
+            {user ? (
+              <div className="flex items-center gap-6">
+               
+                <div className="flex items-center gap-3">
+
+                
+                  <Avatar className="h-9 w-9 border-2 border-blue-100 ring-offset-2 transition-transform hover:scale-105">
+                    <Avatar.Image
+                      alt={user.name}
+                      src={
+                        user?.image }
+                    />
+                    <Avatar.Fallback className="bg-gradient-to-tr from-blue-500 to-indigo-600 font-bold text-white text-xs">
+                      {user.name[0]}
+                    </Avatar.Fallback>
+                  </Avatar>
+                  <span className="hidden sm:inline-block text-sm font-semibold text-slate-700">
+                    {user.name}
+                  </span>
+                </div>
+
+                <button
+                  onClick={async () => {
+                    await authClient.signOut();
+                  }}
+                 className="inline-flex h-10 items-center justify-center px-4 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm shadow-blue-500/10 transition active:scale-98"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+            
+                <Link
+                  href="/login"
+                  className="inline-flex h-10 items-center justify-center px-4 text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50/50 rounded-xl transition active:scale-98"
+                >
+                  Sign In
+                </Link>
+
+                <Link
+                  href="/register"
+                  className="inline-flex h-10 items-center justify-center px-4 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm shadow-blue-500/10 transition active:scale-98"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </>
         </div>
       </div>
     </nav>
