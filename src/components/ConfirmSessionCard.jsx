@@ -1,8 +1,39 @@
+'use client'
+import { authClient } from '@/lib/auth-client';
+import { Button } from '@heroui/react';
 import React from 'react';
 import { FaCheckCircle, FaLayerGroup } from 'react-icons/fa';
 
 const ConfirmSessionCard = ({tutor}) => {
-  const{totalSlots,hourlyFee} = tutor
+  const{totalSlots,hourlyFee,_id,subject,sessionStartDate,tutorName} = tutor
+    const { data: session } = authClient.useSession();
+    const user = session?.user;
+
+
+    const handleBooking = async () =>{
+      const bookingData = {
+     
+       userId:user?.id,
+       userImage:user?.image,
+       userName: user?.name,
+       
+        subject,
+        hourlyFee,
+        tutorName,
+        sessionStartDate,     
+      }
+     const res = await fetch('http://localhost:5000/booking',{
+      method: "POST",
+      headers:{
+        'content-type':'application/json'
+      },
+      body: JSON.stringify(bookingData)
+     })
+     const data = await res.json()
+     console.log(data)
+    }
+
+  
   return (
      <div className="lg:col-span-4 bg-white border border-slate-200/70 rounded-3xl p-6 shadow-sm sticky top-6 space-y-6">
             <div>
@@ -37,17 +68,18 @@ const ConfirmSessionCard = ({tutor}) => {
             </div>
 
          
-            <button 
+            <Button 
+              onClick={handleBooking}
               type="button"
               disabled={totalSlots <= 0}
-              className={`w-full font-bold py-4 px-4 rounded-xl text-center shadow-md transition transform active:scale-98 block text-sm ${
+              className={`w-full font-bold  rounded-xl text-center shadow-md transition transform active:scale-98 block text-sm ${
                 totalSlots > 0 
                   ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/10' 
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
               }`}
             >
               {totalSlots > 0 ? 'Confirm Booking Session' : 'Queue Full / Closed'}
-            </button>
+            </Button>
           </div>
   );
 };
