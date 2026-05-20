@@ -2,6 +2,7 @@
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@heroui/react';
 import React from 'react';
+import toast from 'react-hot-toast';
 import { FaCheckCircle, FaLayerGroup } from 'react-icons/fa';
 
 const ConfirmSessionCard = ({tutor}) => {
@@ -16,7 +17,7 @@ const ConfirmSessionCard = ({tutor}) => {
        userId:user?.id,
        userImage:user?.image,
        userName: user?.name,
-       
+       tutorId: _id,
         subject,
         hourlyFee,
         tutorName,
@@ -30,7 +31,8 @@ const ConfirmSessionCard = ({tutor}) => {
       body: JSON.stringify(bookingData)
      })
      const data = await res.json()
-     console.log(data)
+      toast.success("Session Added")
+      window.location.reload();
     }
 
   
