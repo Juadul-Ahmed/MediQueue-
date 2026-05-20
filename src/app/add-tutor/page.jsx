@@ -9,9 +9,18 @@ export default function AddTutorPage() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const tutorData = Object.fromEntries(formData.entries());
-
-    console.log('Submitting Tutor Payload:', tutorData);
     toast.success('Tutor profile initialized successfully!');
+
+    const res = await fetch('http://localhost:5000/tutor',{
+      method: 'POST',
+      headers:{
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(tutorData)
+    })
+    const data = await res.json()
+    console.log(data);
+    
   };
 
   return (
@@ -55,13 +64,13 @@ export default function AddTutorPage() {
                 </Select.Trigger>
                 <Select.Popover>
                   <ListBox>
-                    <ListBox.Item id="Mathematics" textValue="Mathematics">Linear Algebra</ListBox.Item>
-                    <ListBox.Item id="Physics" textValue="Physics">Discrete Mathematics</ListBox.Item>
-                    <ListBox.Item id="Software Engineering" textValue="Software Engineering">Digital Logic</ListBox.Item>
-                    <ListBox.Item id="Chemistry" textValue="Chemistry">Object Oriented Programming</ListBox.Item>
-                    <ListBox.Item id="Biology" textValue="Biology">Intro to C language</ListBox.Item>
-                    <ListBox.Item id="Biology" textValue="Biology">Professional English</ListBox.Item>
-                    <ListBox.Item id="Biology" textValue="Biology">Data Structure and ALgorithm</ListBox.Item>
+                    <ListBox.Item id="Linear Algebra" textValue="Linear Algebra">Linear Algebra</ListBox.Item>
+                    <ListBox.Item id="Discrete Mathematics" textValue="Discrete Mathematics">Discrete Mathematics</ListBox.Item>
+                    <ListBox.Item id="Digital Logic" textValue="Digital Logic">Digital Logic</ListBox.Item>
+                    <ListBox.Item id="Object Oriented Programming" textValue="Object Oriented Programming">Object Oriented Programming</ListBox.Item>
+                    <ListBox.Item id="Intro to C language" textValue="Intro to C language">Intro to C language</ListBox.Item>
+                    <ListBox.Item id="Professional English" textValue="Professional English">Professional English</ListBox.Item>
+                    <ListBox.Item id="Data Structure and ALgorithm" textValue="Data Structure and ALgorithm">Data Structure and ALgorithm</ListBox.Item>
                   </ListBox>
                 </Select.Popover>
               </Select>
