@@ -1,94 +1,160 @@
-'use client'
-import { authClient } from '@/lib/auth-client';
-import { Button } from '@heroui/react';
 import React from 'react';
-import toast from 'react-hot-toast';
-import { FaCheckCircle, FaLayerGroup } from 'react-icons/fa';
+import Image from 'next/image';
+import Link from 'next/link';
+import { 
+  FaGraduationCap, 
+  FaCalendarAlt, 
+  FaClock, 
+  FaMapMarkerAlt, 
+  FaGlobe, 
+  FaUserShield, 
+  FaArrowLeft,
+} from 'react-icons/fa';
+import ConfirmSessionCard from '@/components/ConfirmSessionCard';
 
-const ConfirmSessionCard = ({tutor}) => {
-  const{totalSlots,hourlyFee,_id,subject,sessionStartDate,tutorName} = tutor
-    const { data: session } = authClient.useSession();
-    const user = session?.user;
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+const TutorDetailPage = async ({ params }) => {
+  const { id } = await params;
+
+  if (!id || id === '[id]' || id === 'undefined') {
+    return <div className="p-10 text-center text-slate-500">Loading profile data...</div>;
+  }
 
 
-    const handleBooking = async () =>{
-      const bookingData = {
-     
-       userId:user?.id,
-       userImage:user?.image,
-       userName: user?.name,
-       tutorId: _id,
-        subject,
-        hourlyFee,
-        tutorName,
-        sessionStartDate,     
-      }
-
-      const {data:tokenData} = await authClient.token()
-      console.log(tokenData.token);
-      
-     const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/booking`,{
-      method: "POST",
-      headers:{
-        'content-type':'application/json',
-        authorization: `Bearer ${tokenData?.token}`
-      },
-      body: JSON.stringify(bookingData)
-     })
-     const data = await res.json()
-      toast.success("Session Added")
-      window.location.reload();
-    }
-
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutor/${id}`, {
+    cache: 'no-store'
+  });
   
+  const tutor = res.ok ? await res.json() : null;
+
+
+  if (!tutor || !tutor.tutorName) {
+    return (
+      <div className="max-w-4xl mx-auto my-20 p-8 text-center bg-white border rounded-2xl shadow-sm">
+        <p className="text-slate-600 font-medium text-lg">⚠️ Tutor Profile Offline</p>
+        <p className="text-slate-400 text-sm mt-1">
+          Could not find a valid database record for identifier: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-rose-600">{id}</code>
+        </p>
+        <Link href="/tutors" className="text-blue-600 font-bold hover:underline mt-6 inline-block bg-blue-50 px-4 py-2 rounded-xl">
+          Return to Tutors Directory
+        </Link>
+      </div>
+    );
+  }
+
+  const {
+    tutorName,
+    photoUrl,
+    subject,
+    hourlyFee,
+    sessionStartDate,
+    institution,
+    availableTiming,
+    totalSlots,
+    location,
+    teachingMode,
+    experience
+  } = tutor;
+
   return (
-     <div className="lg:col-span-4 bg-white border border-slate-200/70 rounded-3xl p-6 shadow-sm sticky top-6 space-y-6">
-            <div>
-              <h3 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-2">Reservation Module</h3>
-              <div className="flex items-baseline gap-1 text-slate-900">
-                <span className="text-3xl font-black">${hourlyFee}</span>
-                <span className="text-sm text-slate-500 font-medium">/ per active study hour</span>
-              </div>
-            </div>
+    <div className="bg-slate-50 min-h-screen py-10 md:py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div className="mb-8">
+          <Link 
+            href="/tutors" 
+            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition"
+          >
+            <FaArrowLeft className="text-xs" /> Back to Tutors Index
+          </Link>
+        </div>
 
-       
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-3">
-              <div className="flex justify-between items-center text-xs font-semibold">
-                <span className="text-slate-500 flex items-center gap-1.5"><FaLayerGroup /> Remaining Capacity Slots:</span>
-                <span className={`px-2 py-0.5 rounded text-xs font-bold ${totalSlots > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
-                  {totalSlots} left
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <div className="lg:col-span-8 bg-white border border-slate-200/70 rounded-3xl p-6 md:p-8 shadow-sm space-y-8">
+            
+            <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left">
+              
+              <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden bg-slate-100 border-4 border-slate-50 shrink-0 shadow-sm">
+                {photoUrl && (
+                  <Image
+                    alt={tutorName || "Tutor Picture"}
+                    src={photoUrl}
+                    fill
+                    sizes="(max-w-md) 100vw, 150px"
+                    className="object-cover object-top"
+                    priority={true}
+                  />
+                )}
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
+                  {subject}
                 </span>
-              </div>
-              <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full rounded-full transition-all duration-500 ${totalSlots > 10 ? 'bg-blue-600' : 'bg-amber-500'}`}
-                  style={{ width: `${Math.min((totalSlots / 150) * 100, 100)}%` }}
-                />
+                <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center sm:justify-start gap-2">
+                  {tutorName}
+                  <FaUserShield className="text-blue-500 text-lg md:text-xl shrink-0" title="Verified System Educator" />
+                </h1>
+                <p className="text-slate-600 font-medium flex items-center justify-center sm:justify-start gap-2 text-sm md:text-base">
+                  <FaGraduationCap className="text-slate-400 text-lg" /> {institution}
+                </p>
               </div>
             </div>
 
-       
-            <div className="space-y-2.5 text-xs text-slate-500 font-medium">
-              <div className="flex items-center gap-2 text-slate-600"><FaCheckCircle className="text-emerald-500 shrink-0" /> Immediate voucher generation token issued</div>
-              <div className="flex items-center gap-2 text-slate-600"><FaCheckCircle className="text-emerald-500 shrink-0" /> Dynamic double-booking safety guard tracking</div>
-              <div className="flex items-center gap-2 text-slate-600"><FaCheckCircle className="text-emerald-500 shrink-0" /> 100% verified academic background check</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-slate-100 pt-6">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-4">
+                <div className="p-3 bg-white rounded-xl shadow-sm text-blue-600"><FaClock /></div>
+                <div>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Available Timing</p>
+                  <p className="text-xs md:text-sm font-semibold text-slate-700 mt-0.5">{availableTiming}</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-4">
+                <div className="p-3 bg-white rounded-xl shadow-sm text-blue-600"><FaMapMarkerAlt /></div>
+                <div>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Campus Location</p>
+                  <p className="text-sm font-bold text-slate-700 mt-0.5">{location}</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-4">
+                <div className="p-3 bg-white rounded-xl shadow-sm text-blue-600"><FaGlobe /></div>
+                <div>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Teaching Delivery Mode</p>
+                  <p className="text-sm font-bold text-slate-700 mt-0.5">{teachingMode}</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center gap-4">
+                <div className="p-3 bg-white rounded-xl shadow-sm text-blue-600"><FaCalendarAlt /></div>
+                <div>
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Session Start Date</p>
+                  <p className="text-sm font-bold text-slate-700 mt-0.5">{sessionStartDate}</p>
+                </div>
+              </div>
             </div>
 
-         
-            <Button 
-              onClick={handleBooking}
-              type="button"
-              disabled={totalSlots <= 0}
-              className={`w-full font-bold  rounded-xl text-center shadow-md transition transform active:scale-98 block text-sm ${
-                totalSlots > 0 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/10' 
-                  : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
-              }`}
-            >
-              {totalSlots > 0 ? 'Confirm Booking Session' : 'Queue Full / Closed'}
-            </Button>
+            <div className="space-y-3 border-t border-slate-100 pt-6">
+              <h3 className="font-bold text-lg text-slate-900 tracking-tight">Professional Experience Credentials</h3>
+              <p className="text-slate-600 text-sm md:text-base leading-relaxed font-light whitespace-pre-line bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                {experience}
+              </p>
+            </div>
+
           </div>
+
+          <ConfirmSessionCard tutor={tutor} />
+
+        </div>
+
+      </div>
+    </div>
   );
 };
 
-export default ConfirmSessionCard;
+export default TutorDetailPage;
