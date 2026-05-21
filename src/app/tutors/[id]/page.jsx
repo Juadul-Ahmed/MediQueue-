@@ -1,69 +1,34 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { 
-  FaGraduationCap, 
-  FaCalendarAlt, 
-  FaClock, 
-  FaMapMarkerAlt, 
-  FaGlobe, 
-  FaUserShield, 
-  FaArrowLeft,
-} from 'react-icons/fa';
+import { FaGraduationCap, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaGlobe, FaUserShield, FaArrowLeft } from 'react-icons/fa';
 import ConfirmSessionCard from '@/components/ConfirmSessionCard';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
-import { unstable_noStore as noStore } from 'next/cache';
+
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const TutorDetailPage = async ({ params }) => {
-
-  noStore(); 
-
   const { id } = await params;
-  
-  const tokenData = await auth.api.getToken({
-    headers: await headers()
-  });
-
-  const token = tokenData?.token; 
 
   if (!id || id === '[id]' || id === 'undefined') {
-    return <div className="p-10 text-center text-slate-500">Loading profile data...</div>;
+    return <div className="p-10 text-center text-slate-500">Loading data...</div>;
   }
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutor/${id}`, {
-    headers: {
-      authorization: token ? `Bearer ${token}` : "" 
-    }
+    cache: 'no-store' 
   });
   
-
   const tutor = res.ok ? await res.json() : null;
 
-e
   if (!tutor || !tutor.tutorName) {
     return (
-      <div className="max-w-4xl mx-auto my-20 p-8 text-center bg-white border rounded-2xl shadow-sm">
-        <p className="text-slate-600 font-medium">Could not retrieve tutor profile data from the production server.</p>
-        <Link href="/tutors" className="text-blue-600 font-bold hover:underline mt-4 inline-block">Return to Tutors Directory</Link>
+      <div className="p-10 text-center">
+        <p>Could not load profile data for ID: {id}</p>
+        <Link href="/tutors" className="text-blue-600 underline">Return to Directory</Link>
       </div>
     );
   }
-
-  const {
-    tutorName,
-    photoUrl,
-    subject,
-    hourlyFee,
-    sessionStartDate,
-    institution,
-    availableTiming,
-    totalSlots,
-    location,
-    teachingMode,
-    experience
-  } = tutor;
-
   return (
     <div className="bg-slate-50 min-h-screen py-10 md:py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
