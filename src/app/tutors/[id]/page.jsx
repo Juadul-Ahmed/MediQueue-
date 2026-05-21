@@ -14,23 +14,23 @@ import ConfirmSessionCard from '@/components/ConfirmSessionCard';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 
-
-
 const TutorDetailPage = async ({ params }) => {
   const { id } = await params;
-  const {token} = await auth.api.getToken({
+  const tokenData = await auth.api.getToken({
     headers: await headers()
-  })
+  });
 
-  
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutors/${id}`,{
+  const token = tokenData?.token; 
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutor/${id}`, {
     headers: {
-      authorization: `Bearer ${token}`
+     
+      authorization: token ? `Bearer ${token}` : "" 
     }
   });
-  const tutor = await res.json();
-
-
+  
+ 
+  const tutor = res.ok ? await res.json() : {};
 
   const {
     tutorName,
@@ -59,27 +59,26 @@ const TutorDetailPage = async ({ params }) => {
           </Link>
         </div>
 
-   
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-   
           <div className="lg:col-span-8 bg-white border border-slate-200/70 rounded-3xl p-6 md:p-8 shadow-sm space-y-8">
             
-           
             <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left">
               
               <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden bg-slate-100 border-4 border-slate-50 shrink-0 shadow-sm">
-                <Image
-                  alt={tutorName}
-                  src={photoUrl}
-                  fill
-                  sizes="(max-w-md) 100vw, 150px"
-                  className="object-cover object-top"
-                  priority={true}
-                />
+             
+                {photoUrl && (
+                  <Image
+                    alt={tutorName || "Tutor Picture"}
+                    src={photoUrl}
+                    fill
+                    sizes="(max-w-md) 100vw, 150px"
+                    className="object-cover object-top"
+                    priority={true}
+                  />
+                )}
               </div>
 
-              
               <div className="space-y-3 pt-2">
                 <span className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
                   {subject}
@@ -128,7 +127,6 @@ const TutorDetailPage = async ({ params }) => {
               </div>
             </div>
 
-           
             <div className="space-y-3 border-t border-slate-100 pt-6">
               <h3 className="font-bold text-lg text-slate-900 tracking-tight">Professional Experience Credentials</h3>
               <p className="text-slate-600 text-sm md:text-base leading-relaxed font-light whitespace-pre-line bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
@@ -138,8 +136,7 @@ const TutorDetailPage = async ({ params }) => {
 
           </div>
 
-       
-        <ConfirmSessionCard tutor={tutor} />
+          <ConfirmSessionCard tutor={tutor} />
 
         </div>
 
