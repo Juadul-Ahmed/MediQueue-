@@ -13,24 +13,42 @@ import {
 import ConfirmSessionCard from '@/components/ConfirmSessionCard';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { unstable_noStore as noStore } from 'next/cache';
 
 const TutorDetailPage = async ({ params }) => {
+
+  noStore(); 
+
   const { id } = await params;
+  
   const tokenData = await auth.api.getToken({
     headers: await headers()
   });
 
   const token = tokenData?.token; 
 
+  if (!id || id === '[id]' || id === 'undefined') {
+    return <div className="p-10 text-center text-slate-500">Loading profile data...</div>;
+  }
+
   const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutor/${id}`, {
     headers: {
-     
       authorization: token ? `Bearer ${token}` : "" 
     }
   });
   
- 
-  const tutor = res.ok ? await res.json() : {};
+
+  const tutor = res.ok ? await res.json() : null;
+
+e
+  if (!tutor || !tutor.tutorName) {
+    return (
+      <div className="max-w-4xl mx-auto my-20 p-8 text-center bg-white border rounded-2xl shadow-sm">
+        <p className="text-slate-600 font-medium">Could not retrieve tutor profile data from the production server.</p>
+        <Link href="/tutors" className="text-blue-600 font-bold hover:underline mt-4 inline-block">Return to Tutors Directory</Link>
+      </div>
+    );
+  }
 
   const {
     tutorName,
@@ -66,7 +84,6 @@ const TutorDetailPage = async ({ params }) => {
             <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left">
               
               <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden bg-slate-100 border-4 border-slate-50 shrink-0 shadow-sm">
-             
                 {photoUrl && (
                   <Image
                     alt={tutorName || "Tutor Picture"}
