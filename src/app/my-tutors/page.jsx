@@ -5,7 +5,7 @@ import React from "react";
 import { BiEdit, BiTrash } from "react-icons/bi";
 
 const TutorsList = async () => {
-  const res = await fetch("http://localhost:5000/tutor/all");
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutor/all`);
   const tutor = await res.json();
 
   return (

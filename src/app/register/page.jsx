@@ -28,7 +28,7 @@ const RegisterPage = () => {
       image: credentials?.image,
     });
     if (data) {
-      redirect("/");
+      redirect("/login");
     }
     if (error) {
       toast.error("Wrong Credentials");

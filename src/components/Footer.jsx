@@ -65,7 +65,7 @@ export default function Footer() {
               Contact Us
             </h4>
             <ul className="space-y-2 text-sm text-slate-400">
-              <li>Email: juadulahmed@gmail.com</li>
+              <li>Email: juadulahmed9@gmail.com</li>
               <li>Phone: +8617713836074</li>
               <li>Support Availability: Mon - Fri, 9AM - 6PM</li>
             </ul>
