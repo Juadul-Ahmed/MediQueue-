@@ -8,20 +8,29 @@ import {
   FaMapMarkerAlt, 
   FaGlobe, 
   FaUserShield, 
-  FaLayerGroup,
   FaArrowLeft,
-  FaCheckCircle
 } from 'react-icons/fa';
 import ConfirmSessionCard from '@/components/ConfirmSessionCard';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 
 
 const TutorDetailPage = async ({ params }) => {
   const { id } = await params;
+  const {token} = await auth.api.getToken({
+    headers: await headers()
+  })
 
-
-  const res = await fetch(`http://localhost:5000/tutor/${id}`);
+  
+  const res = await fetch(`http://localhost:5000/tutor/${id}`,{
+    headers: {
+      authorization: `Bearer ${token}`
+    }
+  });
   const tutor = await res.json();
+
+
 
   const {
     tutorName,
