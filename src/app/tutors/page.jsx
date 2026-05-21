@@ -26,8 +26,7 @@ const TutorPage = () => {
       }).toString();
 
       try {
-        // const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutor/all?${queryParams}`);
-        const res = await fetch(`https://medi-queue-server-six.vercel.app/tutor/all?${queryParams}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tutor/all?${queryParams}`);
         const data = await res.json();
         setTutors(data);
       } catch (error) {
